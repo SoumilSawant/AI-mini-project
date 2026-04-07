@@ -1,15 +1,24 @@
- Local AI News Generator
-What Was Built
-A fully local, zero-API-key news generation app with a Python ReAct agent loop, DuckDuckGo search, and a Streamlit UI.
+📰 Local AI News Generator
 
-Files Created
+A fully local, zero-API-key news generation app powered by a Python-based ReAct agent loop, DuckDuckGo search, and a Streamlit UI.
+
+🚀 What Was Built
+
+This project implements an autonomous news-writing agent that:
+
+Runs completely locally (no API keys required)
+Uses Ollama (llama3.1) for LLM inference
+Integrates DuckDuckGo search for real-time information
+Generates structured news articles using a Pydantic schema
+Provides a clean Streamlit interface
+📁 Project Structure
 File	Purpose
-requirements.txt	Pins ollama, duckduckgo-search, pydantic, streamlit
+requirements.txt	Dependency list (ollama, duckduckgo-search, pydantic, streamlit)
 models.py	NewsArticle Pydantic schema + JSON schema helper
 tools.py	search_web() DuckDuckGo tool + Ollama-compatible TOOLS_SCHEMA
-agent.py	NewsAgent class with a raw Python ReAct while loop
-app.py	Crisp Streamlit UI — input → spinner → rendered article
-Architecture: ReAct Loop
+agent.py	NewsAgent class with a raw Python ReAct loop
+app.py	Streamlit UI (input → processing → rendered article)
+🧠 Architecture: ReAct Loop
 User topic
     │
     ▼
@@ -18,39 +27,50 @@ User topic
     ▼
 ollama.chat(llama3.1, tools=[search_web])
     │
-    ├─── tool_calls? ──► execute search_web(query)
-    │                        │
-    │        append tool result to history
-    │                        │
-    │◄───────────────────────┘  (loop back)
+    ├── tool_calls? ──► execute search_web(query)
+    │                     │
+    │     append tool result to history
+    │                     │
+    │◄────────────────────┘ (loop back)
     │
-    └─── content (JSON)? ──► parse → NewsArticle → return
+    └── content (JSON)? ──► parse → NewsArticle → return
+⚙️ Key Behaviors
 Max iterations: 10 (safety cap)
-Retry logic: if the model returns text that isn't valid JSON, the agent feeds a correction prompt and loops again
-JSON extraction: tries 3 strategies — direct parse, fenced code block stripping, and regex brace-hunting
-Running the App
-Prerequisites
-IMPORTANT
+Retry logic:
+If invalid JSON is returned, the agent:
+Sends a correction prompt
+Re-enters the loop
+JSON extraction strategies:
+Direct parsing
+Code block stripping
+Regex-based brace extraction
+▶️ Running the App
+🔧 Prerequisites
 
-You must have Ollama installed on your machine. Before starting Streamlit, open a terminal and run:
+⚠️ Important: You must have Ollama installed.
+
+Run this in a terminal before starting the app:
 
 ollama run llama3.1
-Wait until the model loads (you'll see a >>> prompt). You can then close that terminal — Ollama runs as a background service.
 
-Start the app
-Open a new terminal in the project folder and run:
+Wait until the model loads (>>> prompt appears), then you can close the terminal. Ollama will continue running in the background.
 
-powershell
+🖥️ Start the App
+
+Open a new terminal in the project directory and run:
+
 C:\Users\sambit\AppData\Local\Programs\Python\Python313\python.exe -m streamlit run app.py
-Streamlit will open at http://localhost:8501 in your browser.
 
-Validation Results
+Then open:
+
+http://localhost:8501
+✅ Validation Results
 Check	Result
 pip install -r requirements.txt	✅ All packages installed (Python 3.13)
-Import check (models, tools, agent)	✅ All imports OK
-Troubleshooting
+Import checks (models, tools, agent)	✅ All imports OK
+🛠️ Troubleshooting
 Issue	Fix
-Connection refused from Ollama	Make sure ollama run llama3.1 is running
-llama3.1 not found	Run ollama pull llama3.1 first
-Agent exceeds 10 iterations	The model may be struggling with JSON — try a simpler topic
-DuckDuckGo rate limit error	Wait 30 seconds and retry; DDGS has a built-in retry
+Connection refused from Ollama	Ensure ollama run llama3.1 is running
+llama3.1 not found	Run ollama pull llama3.1
+Agent exceeds 10 iterations	Try a simpler topic (model may struggle with JSON)
+DuckDuckGo rate limit error	Wait ~30 seconds and retry
